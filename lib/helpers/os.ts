@@ -202,7 +202,7 @@ export class BalenaOS {
 						path: '/os-release',
 					}),
 				);
-				if (value) {
+				if (value !== null) {
 					this.releaseInfo[field] = value[1];
 					this.logger.log(
 						`Found ${field} in os-release file: ${this.releaseInfo[field]}`,
@@ -212,19 +212,22 @@ export class BalenaOS {
 				// If os-release file isn't found, look inside the image to be flashed
 				// Especially in case of OS image inside flasher images. Example: Intel-NUC
 				try {
-					const value = pattern.exec(
+					const value1 = pattern.exec(
 						await imagefs.readFile({
 							image: image,
 							partition: 2,
-							path: '/etc/os-release',
+							path: '/usr/lib/os-release',
 						}),
 					);
-					if (value) {
-						this.releaseInfo[field] = value[1];
+					if (value1 !== null) {
+						this.releaseInfo[field] = value1[1];
+						this.logger.log(
+							`Found ${field} in os-release file (flasher image): ${this.releaseInfo[field]}`,
+						);
 					}
 				} catch (err) {
 					this.logger.log(
-						`Cannot detect ${field} with os-release. Error: ${err}`,
+						this.logger.log(`Couldn't find os-release file`)
 					);
 				}
 			}
@@ -248,7 +251,7 @@ export class BalenaOS {
 	 * @category helper
 	 */
 	async configure() {
-		this.readOsRelease();
+		await this.readOsRelease();
 		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
 		if (this.configJson) {
 			await this.injectBalenaConfiguration(this.image.path, this.configJson);
