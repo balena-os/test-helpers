@@ -21,7 +21,6 @@ import { pathExists, ensureFile } from 'fs-extra';
 import { exec, spawn } from 'mz/child_process';
 import { join } from 'path';
 
-
 export class Preload{
     private logger: any;
 	constructor(

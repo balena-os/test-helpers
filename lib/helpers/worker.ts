@@ -26,14 +26,18 @@ import { once, isNumber } from 'lodash';
 import { promisify } from 'util';
 import * as Child_Process from 'child_process';
 import { Utils } from './utils';
+const archiver = require('./archiver');
 
 const pipeline = promisify(Stream.pipeline);
 const exec = promisify(Child_Process.exec);
 
 const utils = new Utils();
 
-// const Archiver = require('../common/archiver');
-// const config = require('config');
+function id() {
+	return `${Math.random()
+		.toString(36)
+		.substring(2, 10)}`;
+}
 
 export class Worker {
 	private deviceType: string;
@@ -357,23 +361,34 @@ export class Worker {
 	}
 
 	/**
-	 * Helper to archive journal logs to be used in the suite teardown
+	 * Helper to archive the output of a HostOS command stored inside a file.
 	 *
-	 * @param {*} target
+	 * @remark the default command that runs is `journalctl --no-pager --no-hostname -a -b all`
+	 * @param {string} title The name of the directory in which logs will be archived. Usuallly
+	 * this value is the name of the test suite (Available in the test using `this.id`)
+	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
+	 * @param {string} command The command you need to run and store output for.
 	 * @category helper
 	 */
-	/*async archiveLogs(target) {
-		this.logger.log(`Retreiving journal logs...`);
+	async archiveLogs(
+		title: string,
+		target: string,
+		command: string = 'journalctl --no-pager --no-hostname -a -b all',
+	): Promise<void> {
+		const logFilePath = `/tmp/${command.split(' ')[0]}-${id()}.log`;
+		this.logger.log(
+			`Retrieving ${command.split(' ')[0]} logs to the file ${logFilePath} ...`,
+		);
 		try {
-			const journal = await this.executeCommandInHostOS(
-				`journalctl --no-pager -a -b all`,
+			const commandOutput: any = await this.executeCommandInHostOS(
+				`${command}`,
 				target,
+				{ interval: 10000, tries: 3 },
 			);
-			const journalLogsPath = '/tmp/journal.log';
-			fs.writeFileSync(journalLogsPath, journal);
-			await Archiver.add(journalLogsPath);
+			fs.writeFileSync(logFilePath, commandOutput);
+			await archiver.add(title, logFilePath);
 		} catch (e) {
-			this.logger.log(`Couldn't retrieve journal logs with error ${e}`);
+			this.logger.log(`Couldn't retrieve logs with error: ${e}`);
 		}
-	}*/
+	}
 }
