@@ -56,6 +56,7 @@ import { promisify } from 'util';
 import * as Stream from 'stream';
 const pipeline = promisify(Stream.pipeline);
 import * as zlib from 'zlib';
+const config = require('config');
 
 async function isGzip(filePath: string) {
 	const buf = Buffer.alloc(3);
@@ -70,27 +71,28 @@ function id() {
 }
 
 export class BalenaOS {
-    private deviceType: string;
-    private configJson: {};
-    private image: any;
+	private deviceType: string;
+	private configJson: {};
+	private image: any;
 	private network: any;
 	private logger: any;
-    private contract: any;
-    private releaseInfo: any;
+	private contract: any;
+	private releaseInfo: any;
 	constructor(
 		options = {
-            deviceType: '',
-            network: {},
-            image: '',
-            configJson: {},
-            unpackPath: ''
-        },
+			deviceType: '',
+			network: {},
+			image: '',
+			configJson: {},
+			unpackPath: ''
+		},
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			input: options.image,
+			// @ts-ignore
+			input: options.image || config.get('leviathan.uploads').image,
 			path: join(options.unpackPath, `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
@@ -103,65 +105,65 @@ export class BalenaOS {
 		this.releaseInfo = { version: null, variant: null };
 	}
 
-    getDeviceType(){
-        console.log(this.deviceType);
-    }
+	getDeviceType() {
+		console.log(this.deviceType);
+	}
 
-    async injectBalenaConfiguration(image: string, configuration: any){
-        return imagefs.writeFile(
-            {
-                image,
-                partition: 1,
-                path: '/config.json',
-            },
-            JSON.stringify(configuration),
-        );
-    };
-    
-    // TODO: This function should be implemented using Reconfix
-    async injectNetworkConfiguration(image: string, configuration: any){
-        if (configuration.wireless == null) {
-            return;
-        }
-        if (configuration.wireless.ssid == null) {
-            throw new Error(
-                `Invalid wireless configuration: ${configuration.wireless}`,
-            );
-        }
-    
-        const wifiConfiguration = [
-            '[connection]',
-            'id=balena-wifi',
-            'type=wifi',
-            '[wifi]',
-            'hidden=true',
-            'mode=infrastructure',
-            `ssid=${configuration.wireless.ssid}`,
-            '[ipv4]',
-            'method=auto',
-            '[ipv6]',
-            'addr-gen-mode=stable-privacy',
-            'method=auto',
-        ];
-    
-        if (configuration.wireless.psk) {
-            Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
-                '[wifi-security]',
-                'auth-alg=open',
-                'key-mgmt=wpa-psk',
-                `psk=${configuration.wireless.psk}`,
-            ]);
-        }
-    
-        await imagefs.writeFile(
-            {
-                image,
-                partition: 1,
-                path: '/system-connections/balena-wifi',
-            },
-            wifiConfiguration.join('\n'),
-        );
-    };
+	async injectBalenaConfiguration(image: string, configuration: any) {
+		return imagefs.writeFile(
+			{
+				image,
+				partition: 1,
+				path: '/config.json',
+			},
+			JSON.stringify(configuration),
+		);
+	};
+
+	// TODO: This function should be implemented using Reconfix
+	async injectNetworkConfiguration(image: string, configuration: any) {
+		if (configuration.wireless == null) {
+			return;
+		}
+		if (configuration.wireless.ssid == null) {
+			throw new Error(
+				`Invalid wireless configuration: ${configuration.wireless}`,
+			);
+		}
+
+		const wifiConfiguration = [
+			'[connection]',
+			'id=balena-wifi',
+			'type=wifi',
+			'[wifi]',
+			'hidden=true',
+			'mode=infrastructure',
+			`ssid=${configuration.wireless.ssid}`,
+			'[ipv4]',
+			'method=auto',
+			'[ipv6]',
+			'addr-gen-mode=stable-privacy',
+			'method=auto',
+		];
+
+		if (configuration.wireless.psk) {
+			Reflect.apply(wifiConfiguration.push, wifiConfiguration, [
+				'[wifi-security]',
+				'auth-alg=open',
+				'key-mgmt=wpa-psk',
+				`psk=${configuration.wireless.psk}`,
+			]);
+		}
+
+		await imagefs.writeFile(
+			{
+				image,
+				partition: 1,
+				path: '/system-connections/balena-wifi',
+			},
+			wifiConfiguration.join('\n'),
+		);
+	};
 
 	/**
 	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
