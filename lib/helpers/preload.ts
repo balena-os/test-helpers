@@ -21,50 +21,50 @@ import { pathExists, ensureFile } from 'fs-extra';
 import { exec, spawn } from 'mz/child_process';
 import { join } from 'path';
 
-export class Preload{
+export class Preload {
     private logger: any;
-	constructor(
-		apiUrl = 'balena-cloud.com',
-		logger = { log: console.log, status: console.log, info: console.log },
-	) {
-		this.logger = logger;
-		exec(`BALENARC_BALENA_URL=${apiUrl}`);
-	}
+    constructor(
+        apiUrl = 'balena-cloud.com',
+        logger = { log: console.log, status: console.log, info: console.log },
+    ) {
+        this.logger = logger;
+        exec(`BALENARC_BALENA_URL=${apiUrl}`);
+    }
 
-	/**
-	 * Preload the image onto the target image
-	 *
-	 * @param {string} image path to the image
-	 * @param {*} options options to be executed with balena preload command
-	 *
-	 * @category helper
-	 */
-	async preload(image: string, options:any) {
-		const socketPath = (await pathExists('/var/run/balena.sock'))
-			? '/var/run/balena.sock'
-			: '/var/run/docker.sock';
+    /**
+     * Preload the image onto the target image
+     *
+     * @param {string} image path to the image
+     * @param {*} options options to be executed with balena preload command
+     *
+     * @category helper
+     */
+    async preload(image: string, options: any) {
+        const socketPath = (await pathExists('/var/run/balena.sock'))
+            ? '/var/run/balena.sock'
+            : '/var/run/docker.sock';
 
-		// We are making use of the docker daemon on the host, so we need to figure out where our image is on the host
-		const docker = new Docker({ socketPath });
+        // We are making use of the docker daemon on the host, so we need to figure out where our image is on the host
+        const docker = new Docker({ socketPath });
 
-		const Container = docker.getContainer(
-			// Get containerId from inside our container
-			(
-				await exec(
-					'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
-				)
-			)[0],
-		);
-		const Inspect = await Container.inspect();
-		const Mount = Inspect.Mounts.find(mount => {
-			return mount.Name != null
-				? mount.Name.slice(
-						mount.Name.length - Inspect.Config.Labels.share.length,
-				  ) === Inspect.Config.Labels.share
-				: false;
-		});
+        const Container = docker.getContainer(
+            // Get containerId from inside our container
+            (
+                await exec(
+                    'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
+                )
+            )[0],
+        );
+        const Inspect = await Container.inspect();
+        const Mount = Inspect.Mounts.find(mount => {
+            return mount.Name != null
+                ? mount.Name.slice(
+                    mount.Name.length - Inspect.Config.Labels.share.length,
+                ) === Inspect.Config.Labels.share
+                : false;
+        });
 
-        if (Mount !== undefined){
+        if (Mount !== undefined) {
             image = image.replace(Mount.Destination, '');
 
             // We have to deal with the fact that our image exist on the fs the preloader runs in a different
@@ -73,15 +73,14 @@ export class Preload{
 
             this.logger.log('Preloading image');
             await new Promise<void>((resolve, reject) => {
-                const output:any = [];
+                const output: any = [];
                 const child = spawn(
                     'balena',
                     [
                         `preload ${join(
                             Mount.Source,
                             image,
-                        )} --docker ${socketPath} --fleet ${options.app} --commit ${
-                            options.commit
+                        )} --docker ${socketPath} --fleet ${options.app} --commit ${options.commit
                         } ${options.pin ? '--pin-device-to-release ' : ''}`,
                     ],
                     {
@@ -98,7 +97,7 @@ export class Preload{
                     output.push(data.toString());
                 });
 
-                function handleSignal(signal :any) {
+                function handleSignal(signal: any) {
                     child.kill(signal);
                 }
 
@@ -120,5 +119,5 @@ export class Preload{
                 });
             });
         }
-	}
+    }
 };

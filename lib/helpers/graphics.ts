@@ -120,118 +120,118 @@ const oneBits = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
 
 
 export async function hammingDistance(hashA: any[], hashB:any[]){
-    let d = 0;
+	let d = 0;
 
-    if (hashA.length !== hashB.length) {
-        throw new Error("Can't compare hashes with different length");
-    }
+	if (hashA.length !== hashB.length) {
+		throw new Error("Can't compare hashes with different length");
+	}
 
-    for (let i = 0; i < hashA.length; i++) {
-        var n1 = parseInt(hashA[i], 16);
-        var n2 = parseInt(hashB[i], 16);
-        d += oneBits[n1 ^ n2];
-    }
-    return d;
+	for (let i = 0; i < hashA.length; i++) {
+		var n1 = parseInt(hashA[i], 16);
+		var n2 = parseInt(hashB[i], 16);
+		d += oneBits[n1 ^ n2];
+	}
+	return d;
 }
 // This is a perceptual image hash calculation tool based on algorithm descibed
 // in Block Mean Value Based Image Perceptual Hashing by Bian Yang, Fan Gu and Xiamu Niu.
 export async function blockhash(data:any, bits = 8){
-    const result = [];
+	const result = [];
 
-    let weightTop, weightBottom, weightLeft, weightRight;
-    let blockTop, blockBottom, blockLeft, blockRight;
-    let yMod, yFrac, yInt;
-    let xMod, xFrac, xInt;
-    let blocks: any[] = [];
+	let weightTop, weightBottom, weightLeft, weightRight;
+	let blockTop, blockBottom, blockLeft, blockRight;
+	let yMod, yFrac, yInt;
+	let xMod, xFrac, xInt;
+	let blocks: any[] = [];
 
-    const evenX = data.width % bits === 0;
-    const evenY = data.height % bits === 0;
+	const evenX = data.width % bits === 0;
+	const evenY = data.height % bits === 0;
 
-    if (evenX && evenY) {
-        return bmvbHashEven(data, bits);
-    }
+	if (evenX && evenY) {
+		return bmvbHashEven(data, bits);
+	}
 
-    // initialize blocks array with 0s
-    for (let i = 0; i < bits; i++) {
-        blocks.push([]);
-        for (let j = 0; j < bits; j++) {
-            blocks[i].push(0);
-        }
-    }
+	// initialize blocks array with 0s
+	for (let i = 0; i < bits; i++) {
+		blocks.push([]);
+		for (let j = 0; j < bits; j++) {
+			blocks[i].push(0);
+		}
+	}
 
-    const blockWidth = data.width / bits;
-    const blockHeight = data.height / bits;
+	const blockWidth = data.width / bits;
+	const blockHeight = data.height / bits;
 
-    for (let y = 0; y < data.height; y++) {
-        if (evenY) {
-            // don't bother dividing y, if the size evenly divides by bits
-            blockTop = blockBottom = Math.floor(y / blockHeight);
-            weightTop = 1;
-            weightBottom = 0;
-        } else {
-            yMod = (y + 1) % blockHeight;
-            yFrac = yMod - Math.floor(yMod);
-            yInt = yMod - yFrac;
+	for (let y = 0; y < data.height; y++) {
+		if (evenY) {
+			// don't bother dividing y, if the size evenly divides by bits
+			blockTop = blockBottom = Math.floor(y / blockHeight);
+			weightTop = 1;
+			weightBottom = 0;
+		} else {
+			yMod = (y + 1) % blockHeight;
+			yFrac = yMod - Math.floor(yMod);
+			yInt = yMod - yFrac;
 
-            weightTop = 1 - yFrac;
-            weightBottom = yFrac;
+			weightTop = 1 - yFrac;
+			weightBottom = yFrac;
 
-            // y_int will be 0 on bottom/right borders and on block boundaries
-            if (yInt > 0 || y + 1 === data.height) {
-                blockTop = blockBottom = Math.floor(y / blockHeight);
-            } else {
-                blockTop = Math.floor(y / blockHeight);
-                blockBottom = Math.ceil(y / blockHeight);
-            }
-        }
+			// y_int will be 0 on bottom/right borders and on block boundaries
+			if (yInt > 0 || y + 1 === data.height) {
+				blockTop = blockBottom = Math.floor(y / blockHeight);
+			} else {
+				blockTop = Math.floor(y / blockHeight);
+				blockBottom = Math.ceil(y / blockHeight);
+			}
+		}
 
-        for (let x = 0; x < data.width; x++) {
-            const ii = (y * data.width + x) * 4;
+		for (let x = 0; x < data.width; x++) {
+			const ii = (y * data.width + x) * 4;
 
-            let avgValue;
-            let alpha = data.data[ii + 3];
-            if (alpha === 0) {
-                avgValue = 765;
-            } else {
-                avgValue = data.data[ii] + data.data[ii + 1] + data.data[ii + 2];
-            }
+			let avgValue;
+			let alpha = data.data[ii + 3];
+			if (alpha === 0) {
+				avgValue = 765;
+			} else {
+				avgValue = data.data[ii] + data.data[ii + 1] + data.data[ii + 2];
+			}
 
-            if (evenX) {
-                blockLeft = blockRight = Math.floor(x / blockWidth);
-                weightLeft = 1;
-                weightRight = 0;
-            } else {
-                xMod = (x + 1) % blockWidth;
-                xFrac = xMod - Math.floor(xMod);
-                xInt = xMod - xFrac;
+			if (evenX) {
+				blockLeft = blockRight = Math.floor(x / blockWidth);
+				weightLeft = 1;
+				weightRight = 0;
+			} else {
+				xMod = (x + 1) % blockWidth;
+				xFrac = xMod - Math.floor(xMod);
+				xInt = xMod - xFrac;
 
-                weightLeft = 1 - xFrac;
-                weightRight = xFrac;
+				weightLeft = 1 - xFrac;
+				weightRight = xFrac;
 
-                // x_int will be 0 on bottom/right borders and on block boundaries
-                if (xInt > 0 || x + 1 === data.width) {
-                    blockLeft = blockRight = Math.floor(x / blockWidth);
-                } else {
-                    blockLeft = Math.floor(x / blockWidth);
-                    blockRight = Math.ceil(x / blockWidth);
-                }
-            }
+				// x_int will be 0 on bottom/right borders and on block boundaries
+				if (xInt > 0 || x + 1 === data.width) {
+					blockLeft = blockRight = Math.floor(x / blockWidth);
+				} else {
+					blockLeft = Math.floor(x / blockWidth);
+					blockRight = Math.ceil(x / blockWidth);
+				}
+			}
 
-            // add weighted pixel value to relevant blocks
-            blocks[blockTop][blockLeft] += avgValue * weightTop * weightLeft;
-            blocks[blockTop][blockRight] += avgValue * weightTop * weightRight;
-            blocks[blockBottom][blockLeft] += avgValue * weightBottom * weightLeft;
-            blocks[blockBottom][blockRight] +=
-                avgValue * weightBottom * weightRight;
-        }
-    }
+			// add weighted pixel value to relevant blocks
+			blocks[blockTop][blockLeft] += avgValue * weightTop * weightLeft;
+			blocks[blockTop][blockRight] += avgValue * weightTop * weightRight;
+			blocks[blockBottom][blockLeft] += avgValue * weightBottom * weightLeft;
+			blocks[blockBottom][blockRight] +=
+				avgValue * weightBottom * weightRight;
+		}
+	}
 
-    for (let i = 0; i < bits; i++) {
-        for (let j = 0; j < bits; j++) {
-            result.push(blocks[i][j]);
-        }
-    }
+	for (let i = 0; i < bits; i++) {
+		for (let j = 0; j < bits; j++) {
+			result.push(blocks[i][j]);
+		}
+	}
 
-    translateBlocksToBits(result, blockWidth * blockHeight);
-    return bitsToHexhash(result);
+	translateBlocksToBits(result, blockWidth * blockHeight);
+	return bitsToHexhash(result);
 };
