@@ -53,7 +53,7 @@ import retry from 'bluebird-retry';
 const Bluebird = require('bluebird');
 import { Utils } from './utils';
 import { promisify } from 'util';
-// import * as Stream from 'stream';
+import * as Stream from 'stream';
 import * as Child_Process from 'child_process';
 const exec = promisify(Child_Process.exec);
 import { BalenaSDK, getSdk } from 'balena-sdk';
@@ -353,8 +353,8 @@ export class Cloud {
 			);
 			return await new Promise(async (resolve, reject) => {
 				await this.balena.models.os.download(deviceType, version, function (
-					error: any,
-					stream: any,
+					error: Error,
+					stream: Stream.Readable,
 				) {
 					if (error) {
 						fs.unlink(path, () => {
