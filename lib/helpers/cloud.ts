@@ -53,27 +53,26 @@ import retry from 'bluebird-retry';
 const Bluebird = require('bluebird');
 import { Utils } from './utils';
 import { promisify } from 'util';
-import * as Stream from 'stream';
+// import * as Stream from 'stream';
 import * as Child_Process from 'child_process';
 const exec = promisify(Child_Process.exec);
 import { BalenaSDK, getSdk } from 'balena-sdk';
 
-
 const utils = new Utils();
 
 export class Cloud {
-    private balena: BalenaSDK;
-    private logger: any;
-    private downloadsDir: string
+	private balena: BalenaSDK;
+	private logger: any;
+	// private downloadsDir: string
 	constructor(
 		apiUrl: string,
 		logger = { log: console.log, status: console.log, info: console.log },
-        downloadsDir: string
+		// downloadsDir: string
 	) {
 		this.balena = getSdk({
 			apiUrl: `https://api.${apiUrl}`,
 		});
-        this.downloadsDir = downloadsDir;
+		// this.downloadsDir = downloadsDir;
 		this.logger = logger;
 	}
 
@@ -103,7 +102,7 @@ export class Cloud {
 					throw new Error(`${device}: is not marked as connected to our VPN.`);
 				}
 
-				try{
+				try {
 					const host = await this.balena.settings.get('proxyUrl')
 					const result = await utils.executeCommandOverSSH(
 						`host -s ${device} source /etc/profile ; ${command}`,
@@ -123,7 +122,7 @@ export class Cloud {
 					}*/
 
 					return result.stdout;
-				}catch(e){
+				} catch (e) {
 					throw new Error('Error while trying to ssh');
 				}
 			},
@@ -145,7 +144,7 @@ export class Cloud {
 		return this.balena.auth.logout();
 	}
 
-    async isDeviceConnectedToVpn(device: string) {
+	async isDeviceConnectedToVpn(device: string) {
 		const status = await this.balena.models.device.get(device)
 		return status.is_connected_to_vpn;
 	}
@@ -198,7 +197,7 @@ export class Cloud {
 					uuid,
 				);
 				let running = false;
-				running = services.every((service:string) => {
+				running = services.every((service: string) => {
 					return (
 						deviceServices.current_services[service][0].status === 'Running' &&
 						deviceServices.current_services[service][0].commit === commit
@@ -220,7 +219,7 @@ export class Cloud {
 	 *
 	 * @category helper
 	 */
-	async executeCommandInContainer(command: string, containerName: string, uuid:string) {
+	async executeCommandInContainer(command: string, containerName: string, uuid: string) {
 		// get the container ID of container through balena engine
 		const containerId = await this.executeCommandInHostOS(
 			`balena ps --format "{{.Names}}" | grep ${containerName}`,
@@ -273,7 +272,7 @@ export class Cloud {
 		let checkName = await this.executeCommandInHostOS(
 			`balena ps | grep balena_supervisor`,
 			uuid
-		  );
+		);
 		let supervisorName = (checkName !== "") ? `balena_supervisor` : `resin_supervisor`
 		let supervisor = await this.executeCommandInHostOS(
 			`balena exec ${supervisorName} cat package.json | grep version`,
@@ -306,25 +305,28 @@ export class Cloud {
 		}
 
 		const path = join(
-			this.downloadsDir,
+			// @ts-ignore
+			config.get('leviathan.downloads'),
 			`balenaOs-${version}.img`,
 		);
 
-		// Caching implmentation in progress - Not yet complete
-		// glob("/data/images/balenaOs-*.img", (err, files) => {
+		// Caching implmentation if needed - Check https://github.com/balena-os/leviathan/issues/441
+		// // Step 1: Find previously download balenaOS images in the Downlaods directory
+		// glob(config.get('leviathan.downloads') + "balenaOs-*.img", (err, files) => {
 		// 	if (err) {
 		// 		throw err
 		// 	}
-		// 	console.log(files)
 		// 	files.forEach(async (file) => {
 		// 		try {
-		// 			console.log(`file found is ${file}`)
-		// 			await this.context.get().os.readOsRelease(file)
-		// 			let versionAvailable = await this.context.get().os.contract.version
+		//			// Step 2: For each balenaOS image, we check and extract semver version using readOsRelease method
+		//			// There is a step missing here with os class not being initialised for the image being checked.
+		//			// Create an object of the os helpers class and use the readOsRelease() method to extract balenaOS version
+		// 			let versionAvailable = await this.context.get().os.readOsRelease(file)
 		// 			console.log(`verion found in the file is ${versionAvailable}`)
 
 		// 			/**
-		// 			 * Returns 0 if versionA == versionB, or
+		//			 * Using balena-semver, we compare versions and figure out if we need to download a new image or we already have one available in cache. 
+		// 			 * The if condition returns 0 if versionA == versionB, or
 		// 			 * 1 if versionA is greater, or
 		// 			 * -1 if versionB is greater.
 		// 			 * https://github.com/balena-io-modules/balena-semver#compareversiona-versionb--number
@@ -350,9 +352,9 @@ export class Cloud {
 				`Fetching balenaOS version ${version}, attempt ${attempt}...`,
 			);
 			return await new Promise(async (resolve, reject) => {
-				await this.balena.models.os.download(deviceType, version, function(
-					error: Error,
-					stream: Stream.Readable,
+				await this.balena.models.os.download(deviceType, version, function (
+					error: any,
+					stream: any,
 				) {
 					if (error) {
 						fs.unlink(path, () => {
