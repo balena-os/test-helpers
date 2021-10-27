@@ -50,13 +50,14 @@ import { find } from 'lodash';
 import { fs } from 'mz';
 import { join } from 'path';
 import retry from 'bluebird-retry';
-const Bluebird = require('bluebird');
+import Bluebird from 'bluebird';
 import { Utils } from './utils';
 import { promisify } from 'util';
 import * as Stream from 'stream';
 import * as Child_Process from 'child_process';
-const exec = promisify(Child_Process.exec);
 import { BalenaSDK, getSdk } from 'balena-sdk';
+import config from 'config';
+const exec = promisify(Child_Process.exec);
 
 const utils = new Utils();
 
@@ -303,9 +304,8 @@ export class Cloud {
 			// make sure we always flash the development variant
 			version = versions.latest.replace('prod', 'dev');
 		}
-
-		const path = join(
-			// @ts-ignore
+		
+		 const path = join(
 			config.get('leviathan.downloads'),
 			`balenaOs-${version}.img`,
 		);

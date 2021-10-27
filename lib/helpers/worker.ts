@@ -26,7 +26,8 @@ import { once, isNumber } from 'lodash';
 import { promisify } from 'util';
 import * as Child_Process from 'child_process';
 import { Utils } from './utils';
-const archiver = require('./archiver');
+import * as archiver from './archiver';
+import config from 'config';
 
 const pipeline = promisify(Stream.pipeline);
 const exec = promisify(Child_Process.exec);
@@ -47,13 +48,13 @@ export class Worker {
 	constructor(
 		deviceType: string,
 		logger = { log: console.log, status: console.log, info: console.log },
-		url = 'http://127.0.0.1:2000',
 	) {
 		this.deviceType = deviceType;
-		this.url = url;
+		this.url = `${config.get('worker.url')}:${config.get('worker.port')}`;
 		this.logger = logger;
 	}
 
+	// Redundant function that needs to be removed. 
 	async getDeviceType() {
 		console.log(this.deviceType);
 	}

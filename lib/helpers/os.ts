@@ -48,14 +48,13 @@
 'use strict';
 
 import { assignIn, mapValues } from 'lodash';
-//import * as imagefs from 'resin-image-fs';
-const imagefs = require('resin-image-fs');
 import { fs } from 'mz';
 import { join } from 'path';
 import { promisify } from 'util';
 import * as Stream from 'stream';
-const pipeline = promisify(Stream.pipeline);
 import * as zlib from 'zlib';
+const pipeline = promisify(Stream.pipeline);
+const imagefs = require('resin-image-fs');
 const config = require('config');
 
 async function isGzip(filePath: string) {
@@ -71,13 +70,13 @@ function id() {
 }
 
 export class BalenaOS {
-	private deviceType: string;
-	private configJson: {};
-	private image: any;
-	private network: any;
-	private logger: any;
-	private contract: any;
-	private releaseInfo: any;
+	deviceType: string;
+	configJson: {};
+	image: any;
+	network: any;
+	logger: any;
+	contract: any;
+	releaseInfo: any;
 	constructor(
 		options = {
 			deviceType: '',
@@ -91,9 +90,8 @@ export class BalenaOS {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			// @ts-ignore
 			input: options.image || config.get('leviathan.uploads').image,
-			path: join(options.unpackPath, `image-${id()}`),
+			path: join(config.get('leviathan.downloads'), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
@@ -105,10 +103,10 @@ export class BalenaOS {
 		this.releaseInfo = { version: null, variant: null };
 	}
 
-	getDeviceType() {
+	async getDeviceType() {
 		console.log(this.deviceType);
 	}
-
+	
 	async injectBalenaConfiguration(image: string, configuration: any) {
 		return imagefs.writeFile(
 			{
