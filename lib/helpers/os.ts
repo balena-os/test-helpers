@@ -30,7 +30,7 @@
  */
 
 /*
- * Copyright 2017 balena
+ * Copyright 2021 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import * as Stream from 'stream';
 import * as zlib from 'zlib';
 const pipeline = promisify(Stream.pipeline);
 const imagefs = require('resin-image-fs');
-const config = require('config');
+const config = require ('config');
 
 async function isGzip(filePath: string) {
 	const buf = Buffer.alloc(3);
@@ -69,28 +69,36 @@ function id() {
 		.substring(2, 10)}`;
 }
 
+interface IOptions {
+	deviceType: string,
+	network: any,
+	image?: string
+	configJson: { 
+		uuid: string, 
+		os: { sshKeys: string[] }, 
+		persistentLogging?: boolean, 
+		localMode?: boolean, 
+		developmentMode?: boolean, 
+	
+	}
+}
+
 export class BalenaOS {
 	deviceType: string;
-	configJson: {};
+	configJson: any;
 	image: any;
 	network: any;
 	logger: any;
 	contract: any;
 	releaseInfo: any;
 	constructor(
-		options = {
-			deviceType: '',
-			network: {},
-			image: '',
-			configJson: {},
-			unpackPath: ''
-		},
+		options: IOptions,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			input: options.image || config.get('leviathan.uploads').image,
+			input: options.image || config.get('leviathan.uploads.image'),
 			path: join(config.get('leviathan.downloads'), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
@@ -103,10 +111,11 @@ export class BalenaOS {
 		this.releaseInfo = { version: null, variant: null };
 	}
 
+	// Redundant function need to be removed.
 	async getDeviceType() {
 		console.log(this.deviceType);
 	}
-	
+
 	async injectBalenaConfiguration(image: string, configuration: any) {
 		return imagefs.writeFile(
 			{

@@ -25,14 +25,13 @@ import * as Stream from 'stream';
 import { once, isNumber } from 'lodash';
 import { promisify } from 'util';
 import * as Child_Process from 'child_process';
-import { Utils } from './utils';
+import { Utils} from './utils';
 import * as archiver from './archiver';
 import config from 'config';
 
+const utils = new Utils();
 const pipeline = promisify(Stream.pipeline);
 const exec = promisify(Child_Process.exec);
-
-const utils = new Utils();
 
 function id() {
 	return `${Math.random()
@@ -220,7 +219,7 @@ export class Worker {
 
 		return retry(
 			async () => {
-				const result = await utils.executeCommandOverSSH(
+				const result: {code: number, stderr: string, stdout: string} = await utils.executeCommandOverSSH(
 					`source /etc/profile ; ${command}`,
 					{
 						host: ip,

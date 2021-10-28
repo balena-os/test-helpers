@@ -29,7 +29,7 @@
  */
 
 /*
- * Copyright 2017 balena
+ * Copyright 2021 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,9 @@ import * as Stream from 'stream';
 import * as Child_Process from 'child_process';
 import { BalenaSDK, getSdk } from 'balena-sdk';
 import config from 'config';
+
 const exec = promisify(Child_Process.exec);
-
 const utils = new Utils();
-
 export class Cloud {
 	private balena: BalenaSDK;
 	private logger: any;
