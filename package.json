@@ -1,6 +1,6 @@
 {
   "name": "@balena/leviathan-test-helpers",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -39,5 +39,8 @@
     "resin-image-fs": "^6.0.0",
     "ssh-keygen": "^0.5.0",
     "zlib": "^1.0.5"
+  },
+  "versionist": {
+    "publishedAt": "2021-11-10T23:04:19.496Z"
   }
 }
