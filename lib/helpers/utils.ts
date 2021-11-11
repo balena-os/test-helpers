@@ -81,8 +81,8 @@ export class Utils {
 	async waitUntil(
 		promise: () => Promise<boolean>,
 		rejectionFail = false,
-		_times = 20,
-		_delay = 30000,
+		_times = 7,
+		_delay = 15000,
 	) {
 		const _waitUntil = async (timesR: number): Promise<any> => {
 			if (timesR === 0) {

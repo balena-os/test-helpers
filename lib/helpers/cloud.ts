@@ -90,8 +90,8 @@ export class Cloud {
 		command: string,
 		device: string,
 		timeout = {
-			interval: 10000,
-			tries: 10,
+			interval: 3000,
+			tries: 3,
 		},
 	): Promise<string> {
 		const sshPort = 22;
