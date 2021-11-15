@@ -153,8 +153,8 @@ export class Worker {
 	ip(
 		target: string,
 		timeout = {
-			interval: 10000,
-			tries: 60,
+			interval: 5000,
+			tries: 10,
 		},
 	) {
 		return /.*\.local/.test(target)
