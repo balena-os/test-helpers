@@ -1,6 +1,6 @@
 {
   "name": "@balena/leviathan-test-helpers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,6 +41,6 @@
     "zlib": "^1.0.5"
   },
   "versionist": {
-    "publishedAt": "2021-11-10T23:04:19.496Z"
+    "publishedAt": "2021-11-16T14:34:08.978Z"
   }
 }
