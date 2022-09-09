@@ -4,6 +4,7 @@
       "typings",
       "node_modules/@types"
     ],
+    "types": ["node"],
     "module": "commonjs",
     "target": "es2019",
     "outDir": "build",
@@ -25,9 +26,19 @@
   "include": [
     "lib",
   ],  
-  /*"typedocOptions": {
-    "inputFiles": ["./lib"],
-    "mode": "modules",
-    "out": "docs"
-  }*/
+  "exclude": [
+    "node_modules/**",
+    "build/**",
+  ],
+  "typedocOptions": {
+    "name": "Leviathan Helpers",
+    "entryPoints": ["lib/helpers"],
+    "out": "docs",
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "categorizeByGroup": true,
+    "categoryOrder": ["helper", "*"],
+    "highlightTheme": "slack-ochin",
+  }
 }
