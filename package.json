@@ -7,7 +7,8 @@
   "author": "balena",
   "license": "Apache-2.0",
   "files": [
-    "build/"
+    "build/",
+    "README.md"
   ],
   "repository": {
     "type": "git",
@@ -17,7 +18,8 @@
     "lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
     "lint": "balena-lint -u -e js -e ts --tests lib/**/*",
     "docs": "rimraf docs/ && npx typedoc --tsconfig tsconfig.json",
-    "build": "tsc"
+    "build": "tsc",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@balena/lint": "^6.2.0",
