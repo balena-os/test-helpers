@@ -1,9 +1,9 @@
 /**
- * # Utility helpers
+ * # Levaithan Utilities
  *
- * The module contains helpers to better write tests.
+ * The module contains helpers for helping with test execution or better write tests.
  *
- * @module Leviathan Utility helpers
+ * @module Leviathan Utilities
  */
 
 /*
@@ -24,19 +24,20 @@
 
 
 import { assignIn } from 'lodash';
-import { NodeSSH } from 'node-ssh';
+import NodeSSH from 'node-ssh';
 import Bluebird from 'bluebird';
-import { fs } from 'mz';
+import fs from 'node:fs';
 import path from 'path';
 import { promisify } from 'util';
-import * as Child_Process from 'child_process';
-const exec = promisify(Child_Process.exec);
+import { exec as Exec } from 'child_process';
+const exec = promisify(Exec);
+const keygen = require('ssh-keygen-lite');
 
-const keygen = promisify(require('ssh-keygen'));
 
 function getSSHClientDisposer(config: any) {
 	const createSSHClient = (conf: any) => {
 		return Bluebird.resolve(
+			// @ts-ignore
 			new NodeSSH().connect(
 				assignIn(
 					{
@@ -60,34 +61,51 @@ export class Utils {
 	 * execute commands on the DUT being passed through SSH.
 	 *
 	 * @param {string} command The command to be executed over SSH
-	 * @param {*} config
+	 * @param {} config SSH config 
 	 *
 	 * @category helper
 	 */
-	async executeCommandOverSSH(command: string, config: any): Promise<any> {
-		return Bluebird.using(getSSHClientDisposer(config), (client: any) => {
-			return new Promise(async (resolve, reject) => {
-				client.connection.on('error', (err: any) => {
-					reject(err);
-				});
-				resolve(
-					await client.exec(command, [], {
-						stream: 'both',
-					}),
-				);
-			});
-		});
+	async executeCommandOverSSH(command: string, config: {}): Promise<any> {
+		return Bluebird.using(getSSHClientDisposer(config), (client) => {
+			return new Bluebird(async (resolve, reject) => {
+				try {
+					client.connection.on('error', (err: any) => {
+						console.log(`Connection err: ${err.message}`)
+						reject(err);
+					});
+
+					resolve(
+						await client.exec(command, [], {
+							stream: 'both',
+						}),
+					);
+				} catch (e) {
+					reject(e)
+				}
+			})
+		})
 	}
+
+	/**
+	 * @param {string} promise The command you need to wait for
+	 * @param {boolean} rejectionFail Whether the `waitUntil()` function error out, if a iteration fails once. Defaults to `false`, which results in `waitUntil()` not failing as it iterates and wait for the condition to satisfy.
+	 * @param {number} _times Specify how many times should the command be executed
+	 * @param {number} _delay Specify the delay between each iteration of the command execution
+	 * @throws error on first iteration if`rejectionFail` is true. Otherwise throws error after iterating through the specified `_times` parameter
+	 *
+	 * @category helper
+	 */
 	async waitUntil(
 		promise: () => Promise<boolean>,
-		rejectionFail = false,
-		_times = 20,
-		_delay = 30000,
-	) {
-		const _waitUntil = async (timesR: number): Promise<any> => {
+		rejectionFail: boolean = false,
+		_times: number = 20,
+		_delay: number = 30000,
+	): Promise<any> {
+		async function _waitUntil(timesR: number): Promise<any> {
 			if (timesR === 0) {
 				throw new Error(`Condition ${promise} timed out`);
 			}
+
 			try {
 				if (await promise()) {
 					return;
@@ -97,21 +115,26 @@ export class Utils {
 					throw error;
 				}
 			}
+
 			await Bluebird.delay(_delay);
 			return _waitUntil(timesR - 1);
-		};
+		}
+
 		await _waitUntil(_times);
 	}
+
 	async createSSHKey(keyPath: string) {
-		return (await fs
-			.access(path.dirname(keyPath))
-			.then(async () => {
-				const keys = await keygen({
-					location: keyPath,
-				});
-				await exec('ssh-add -D');
-				await exec(`ssh-add ${keyPath}`);
-				return keys
-			})).pubKey.trim()
+		return fs.access(path.dirname(keyPath), async () => {
+			const keys = await keygen({
+				location: keyPath,
+				type: 'ed25519'
+			});
+			await exec('ssh-add -D');
+			await exec(`ssh-add ${keyPath}`);
+			return {
+				pubKey: keys.pubKey.trim(),
+				key: keys.key.trim(),
+			};
+		})
 	}
 }
