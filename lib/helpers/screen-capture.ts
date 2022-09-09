@@ -19,7 +19,7 @@
  * await worker.capture('stop');
  * ```
  *
- * @module Graphics
+ * @module Screen Capture
  */
 
 /*

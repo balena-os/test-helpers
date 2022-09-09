@@ -1,18 +1,17 @@
-// module that exposes each object
 import { Worker } from './helpers/worker';
 import { BalenaOS } from './helpers/os';
-import { Cloud } from './helpers/cloud';
-import { Preload } from './helpers/preload';
+import { Sdk } from './helpers/sdk';
+import { preload } from './helpers/preload';
 import { Utils } from './helpers/utils';
 import { add, getStream } from './helpers/archiver';
-import { blockhash, hammingDistance } from './helpers/graphics';
+import { blockhash, hammingDistance } from './helpers/screen-capture';
 
 export {
     Worker, 
     BalenaOS, 
-    Cloud, 
-    Preload,
+    Sdk, 
     Utils,
+    preload,
     add, getStream,
     blockhash,
     hammingDistance

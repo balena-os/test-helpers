@@ -1,3 +1,11 @@
+/**
+ * # Preload
+ * 
+ * Use this helper to preload images: https://www.balena.io/docs/reference/balena-cli/#preload-image
+ * 
+ * @module Preload
+ */
+
 /* Copyright 2021 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,109 +23,59 @@
 
 
 'use strict';
+import { spawn } from 'child_process';
 
-import Docker from 'dockerode';
-import { pathExists, ensureFile } from 'fs-extra';
-import { exec, spawn } from 'mz/child_process';
-import { join } from 'path';
+/**
+ * Preload the image onto the target image
+ *
+ * @param {string} image path to the image
+ * @param {app: string, commit: string, pin: boolean} options options to be executed with balena preload command
+ *
+ * @category helper
+ */
+export async function preload(
+    image: string,
+    options: { app: string, commit: string, pin: boolean }
+): Promise<void> {
+    console.log('--Preloading image--');
+    console.log(`Image path: ${image}`);
+    console.log(`Fleet: ${options.app}`);
+    console.log(`Commit: ${options.commit}`);
 
-export class Preload {
-    private logger: any;
-    constructor(
-        apiUrl = 'balena-cloud.com',
-        logger = { log: console.log, status: console.log, info: console.log },
-    ) {
-        this.logger = logger;
-        exec(`BALENARC_BALENA_URL=${apiUrl}`);
-    }
-
-    /**
-     * Preload the image onto the target image
-     *
-     * @param {string} image path to the image
-     * @param {*} options options to be executed with balena preload command
-     *
-     * @category helper
-     */
-    async preload(image: string, options: any) {
-        const socketPath = (await pathExists('/var/run/balena.sock'))
-            ? '/var/run/balena.sock'
-            : '/var/run/docker.sock';
-
-        // We are making use of the docker daemon on the host, so we need to figure out where our image is on the host
-        const docker = new Docker({ socketPath });
-
-        const Container = docker.getContainer(
-            // Get containerId from inside our container
-            (
-                await exec(
-                    'cat /proc/self/cgroup | head -1 | sed -n "s/.*\\([0-9a-z]\\{64\\}\\).*/\\1/p" | tr -d "\n"',
-                )
-            )[0],
+    await new Promise<void>((resolve, reject) => {
+        const child = spawn(
+            'balena',
+            [
+                `preload ${image} --fleet ${options.app} --commit ${options.commit
+                } ${options.pin ? '--pin-device-to-release ' : ''}`,
+                '--debug'
+            ],
+            {
+                stdio: 'inherit',
+                shell: true,
+            },
         );
-        const Inspect = await Container.inspect();
-        const Mount = Inspect.Mounts.find(mount => {
-            return mount.Name != null
-                ? mount.Name.slice(
-                    mount.Name.length - Inspect.Config.Labels.share.length,
-                ) === Inspect.Config.Labels.share
-                : false;
-        });
 
-        if (Mount !== undefined) {
-            image = image.replace(Mount.Destination, '');
-
-            // We have to deal with the fact that our image exist on the fs the preloader runs in a different
-            // path than where our docker daemon runs. Until we fix the issue on the preloader
-            await ensureFile(join(Mount.Source, image));
-
-            this.logger.log('Preloading image');
-            await new Promise<void>((resolve, reject) => {
-                const output: any = [];
-                const child = spawn(
-                    'balena',
-                    [
-                        `preload ${join(
-                            Mount.Source,
-                            image,
-                        )} --docker ${socketPath} --fleet ${options.app} --commit ${options.commit
-                        } ${options.pin ? '--pin-device-to-release ' : ''}`,
-                    ],
-                    {
-                        stdio: 'pipe',
-                        shell: true,
-                    },
-                );
-
-                child.stdout.on('data', (data: Buffer) => {
-                    output.push(data.toString());
-                });
-
-                child.stderr.on('data', (data: Buffer) => {
-                    output.push(data.toString());
-                });
-
-                function handleSignal(signal: any) {
-                    child.kill(signal);
-                }
-
-                process.on('SIGINT', handleSignal);
-                process.on('SIGTERM', handleSignal);
-                child.on('exit', code => {
-                    process.off('SIGINT', handleSignal);
-                    process.off('SIGTERM', handleSignal);
-                    if (code === 0) {
-                        resolve();
-                    } else {
-                        reject(output.join('\n'));
-                    }
-                });
-                child.on('error', err => {
-                    process.off('SIGINT', handleSignal);
-                    process.off('SIGTERM', handleSignal);
-                    reject(err);
-                });
-            });
+        function handleSignal(signal: any) {
+            child.kill(signal);
         }
-    }
-};
+
+        process.on('SIGINT', handleSignal);
+        process.on('SIGTERM', handleSignal);
+        child.on('exit', (code) => {
+            process.off('SIGINT', handleSignal);
+            process.off('SIGTERM', handleSignal);
+            if (code === 0) {
+                resolve();
+            } else {
+                reject()
+            }
+        });
+        child.on('error', (err) => {
+            process.off('SIGINT', handleSignal);
+            process.off('SIGTERM', handleSignal);
+            reject(err);
+        });
+    });
+}
+

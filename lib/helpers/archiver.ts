@@ -46,10 +46,10 @@
  */;
 'use strict';
 
-const config = require('config');
-const { createWriteStream } = require('fs');
-const { copy, ensureDir } = require('fs-extra');
-const { basename, join } = require('path');
+import config from '../config';
+import { createWriteStream } from 'fs';
+import { copy, ensureDir } from 'fs-extra';
+import { basename, join } from 'path';
 
 /**
  * Archive a file to be later sent to the client as an artifact.
@@ -59,7 +59,7 @@ const { basename, join } = require('path');
  * @param {string} artifactPath The absolute path of the file needed to be archived.
  */
 export async function add(id: string, artifactPath: string) {
-	const baseLocation = join(config.get('leviathan.artifacts'), id)
+	const baseLocation = join(config.leviathan.artifacts, id);
 	const archivePath = join(baseLocation, basename(artifactPath));
 	await ensureDir(baseLocation);
 	await copy(artifactPath, archivePath);
@@ -74,7 +74,7 @@ export async function add(id: string, artifactPath: string) {
  * @returns stream of the file
  */
 export async function getStream(id: string, artifactPath: string) {
-	const baseLocation = join(config.get('leviathan.artifacts'), id)
+	const baseLocation = join(config.leviathan.artifacts, id);
 	const archivePath = join(baseLocation, basename(artifactPath));
 	await ensureDir(baseLocation);
 	return createWriteStream(archivePath);

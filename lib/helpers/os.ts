@@ -50,12 +50,12 @@
 import { assignIn, mapValues } from 'lodash';
 import { fs } from 'mz';
 import { join } from 'path';
-import { promisify } from 'util';
+import { CustomPromisify, promisify } from 'util';
 import * as Stream from 'stream';
 import * as zlib from 'zlib';
 const pipeline = promisify(Stream.pipeline);
 const imagefs = require('resin-image-fs');
-const config = require ('config');
+import config from '../config';
 
 async function isGzip(filePath: string) {
 	const buf = Buffer.alloc(3);
@@ -73,13 +73,13 @@ interface IOptions {
 	deviceType: string,
 	network: any,
 	image?: string
-	configJson: { 
-		uuid: string, 
-		os: { sshKeys: string[] }, 
-		persistentLogging?: boolean, 
-		localMode?: boolean, 
-		developmentMode?: boolean, 
-	
+	configJson: {
+		uuid: string,
+		os: { sshKeys: string[] },
+		persistentLogging?: boolean,
+		localMode?: boolean,
+		developmentMode?: boolean,
+
 	}
 }
 
@@ -91,15 +91,20 @@ export class BalenaOS {
 	logger: any;
 	contract: any;
 	releaseInfo: any;
+	bootPartition: number;
 	constructor(
 		options: IOptions,
 		logger = { log: console.log, status: console.log, info: console.log },
 	) {
+		this.bootPartition = 1;
 		this.deviceType = options.deviceType;
 		this.network = options.network;
 		this.image = {
-			input: options.image || config.get('leviathan.uploads.image'),
-			path: join(config.get('leviathan.downloads'), `image-${id()}`),
+			input:
+				options.image === undefined
+					? config.leviathan.uploads.image
+					: options.image,
+			path: join(config.leviathan.downloads, `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
@@ -111,24 +116,22 @@ export class BalenaOS {
 		this.releaseInfo = { version: null, variant: null };
 	}
 
-	// Redundant function need to be removed.
-	async getDeviceType() {
-		console.log(this.deviceType);
-	}
 
-	async injectBalenaConfiguration(image: string, configuration: any) {
-		return imagefs.writeFile(
-			{
-				image,
-				partition: 1,
-				path: '/config.json',
-			},
-			JSON.stringify(configuration),
-		);
+	// TODO: This function should be implemented using Reconfix
+	async injectBalenaConfiguration(image: string, configuration: any, partition = 1) {
+		await imagefs.interact(image, partition, async (_fs: { writeFile: CustomPromisify<Function>; }) => {
+			return promisify(_fs.writeFile)(
+				'/config.json',
+				JSON.stringify(configuration),
+				{ flag: 'w' }
+			)
+		}).catch(() => {
+			return undefined;
+		});
 	};
 
 	// TODO: This function should be implemented using Reconfix
-	async injectNetworkConfiguration(image: string, configuration: any) {
+	async injectNetworkConfiguration(image: string, configuration: any, partition = 1) {
 		if (configuration.wireless == null) {
 			return;
 		}
@@ -162,20 +165,21 @@ export class BalenaOS {
 			]);
 		}
 
-		await imagefs.writeFile(
-			{
-				image,
-				partition: 1,
-				path: '/system-connections/balena-wifi',
-			},
-			wifiConfiguration.join('\n'),
-		);
+		await imagefs.interact(image, partition, async (_fs: { writeFile: CustomPromisify<Function>; }) => {
+			return promisify(_fs.writeFile)(
+				'/system-connections/balena-wifi',
+				wifiConfiguration.join('\n'),
+				{ flag: 'w' }
+			)
+		}).catch(() => {
+			return undefined;
+		});
 	};
 
 	/**
 	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
 	 *
-	 * @remark Leviathan creates a temporary working directory that can referenced using `config.get('leviathan.downloads')`
+	 * @remark Leviathan creates a temporary working directory that can referenced using `config.leviathan.downloads`
 	 *
 	 * @category helper
 	 */
@@ -204,13 +208,14 @@ export class BalenaOS {
 		const readVersion = async (pattern: RegExp, field: string) => {
 			this.logger.log(`Checking ${field} in os-release`);
 			try {
-				const value = pattern.exec(
-					await imagefs.readFile({
-						image: image,
-						partition: 1,
-						path: '/os-release',
-					}),
-				);
+				let value = await imagefs.interact(image, this.bootPartition, async (_fs: { readFile: CustomPromisify<Function>; }) => {
+					return await promisify(_fs.readFile)('/os-release')
+						.catch(() => {
+							return undefined;
+						});
+				});
+				value = pattern.exec(value.toString());
+
 				if (value !== null) {
 					this.releaseInfo[field] = value[1];
 					this.logger.log(
@@ -221,13 +226,13 @@ export class BalenaOS {
 				// If os-release file isn't found, look inside the image to be flashed
 				// Especially in case of OS image inside flasher images. Example: Intel-NUC
 				try {
-					const value1 = pattern.exec(
-						await imagefs.readFile({
-							image: image,
-							partition: 2,
-							path: '/usr/lib/os-release',
-						}),
-					);
+					let value1 = await imagefs.interact(image, this.bootPartition + 1, async (_fs: { readFile: CustomPromisify<Function>; }) => {
+						return await promisify(_fs.readFile)('/usr/lib/os-release')
+							.catch(() => {
+								return undefined;
+							});
+					});
+					value1 = pattern.exec(value1.toString());
 					if (value1 !== null) {
 						this.releaseInfo[field] = value1[1];
 						this.logger.log(
@@ -235,9 +240,7 @@ export class BalenaOS {
 						);
 					}
 				} catch (err) {
-					this.logger.log(
-						this.logger.log(`Couldn't find os-release file`)
-					);
+					this.logger.log(`Couldn't find os-release file`);
 				}
 			}
 		};
@@ -263,8 +266,8 @@ export class BalenaOS {
 		await this.readOsRelease();
 		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);
 		if (this.configJson) {
-			await this.injectBalenaConfiguration(this.image.path, this.configJson);
+			await this.injectBalenaConfiguration(this.image.path, this.configJson, this.bootPartition);
 		}
-		await this.injectNetworkConfiguration(this.image.path, this.network);
+		await this.injectNetworkConfiguration(this.image.path, this.network, this.bootPartition);
 	}
 };
