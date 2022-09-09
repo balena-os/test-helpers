@@ -1,7 +1,7 @@
 npm:
   platforms:
     - name: linux
-      os: alpine
+      os: ubuntu
       architecture: x86_64
       node_versions:
         - "14"
