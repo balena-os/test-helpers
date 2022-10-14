@@ -26,7 +26,7 @@
 import { assignIn } from 'lodash';
 import NodeSSH from 'node-ssh';
 import Bluebird from 'bluebird';
-import fs from 'node:fs';
+import { access } from 'node:fs/promises';
 import path from 'path';
 import { promisify } from 'util';
 import { exec as Exec } from 'child_process';
@@ -124,7 +124,8 @@ export class Utils {
 	}
 
 	async createSSHKey(keyPath: string) {
-		return fs.access(path.dirname(keyPath), async () => {
+		try {
+			await access(path.dirname(keyPath)) 
 			const keys = await keygen({
 				location: keyPath,
 				type: 'ed25519'
@@ -135,6 +136,8 @@ export class Utils {
 				pubKey: keys.pubKey.trim(),
 				key: keys.key.trim(),
 			};
-		})
+		} catch (err) {
+			throw new Error(`SSH keys can't be created due to: ${err}`)
+		}
 	}
 }
