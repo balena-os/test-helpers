@@ -1,5 +1,5 @@
 import { Worker } from './helpers/worker';
-import { BalenaOS } from './helpers/os';
+import { BalenaOS } from './helpers/os.js';
 import { Sdk } from './helpers/sdk';
 import { preload } from './helpers/preload';
 import { Utils } from './helpers/utils';
@@ -16,4 +16,4 @@ export {
     blockhash,
     hammingDistance
  };
- 
+  

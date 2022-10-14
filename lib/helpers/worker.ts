@@ -120,7 +120,7 @@ export class Worker {
 				attempt++;
 				this.logger.log(`Preparing to flash, attempt ${attempt}...`);
 
-				await new Promise<void>(async (resolve, reject) => {
+				await new Promise<void>(async (resolve, reject): Promise<void> => {
 					const req = rp.post({ uri: `${this.url}/dut/flash` });
 
 					req.catch((error) => {
