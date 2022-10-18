@@ -1,6 +1,6 @@
 {
   "name": "@balena/leviathan-test-helpers",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Test helpers for Leviathan",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -52,7 +52,7 @@
     "tar-fs": "^2.1.1"
   },
   "versionist": {
-    "publishedAt": "2022-10-18T07:58:59.656Z"
+    "publishedAt": "2022-10-18T11:28:08.773Z"
   },
   "engines": {
     "node": "~14.19.3"
