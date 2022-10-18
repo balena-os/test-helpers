@@ -1,6 +1,6 @@
 "use strict"
 
-const config = {
+export const config = {
   leviathan: {
     artifacts: '/tmp/artifacts',    // To store artifacts meant to be reported as results at the end of the suite
     downloads: '/data/downloads',   // To store/download assets needed for the suite (non-persistent) 
@@ -13,5 +13,3 @@ const config = {
     }
   }
 };
-
-export default config

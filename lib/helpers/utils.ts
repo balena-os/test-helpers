@@ -22,17 +22,15 @@
  * limitations under the License.
  */
 
-
-import { assignIn } from 'lodash';
-import NodeSSH from 'node-ssh';
-import Bluebird from 'bluebird';
-import { access } from 'node:fs/promises';
-import path from 'path';
-import { promisify } from 'util';
-import { exec as Exec } from 'child_process';
+import { assignIn } from "lodash";
+import { NodeSSH } from "node-ssh";
+import Bluebird from "bluebird";
+import { access } from "node:fs/promises";
+import path from "path";
+import { promisify } from "util";
+import { exec as Exec } from "child_process";
 const exec = promisify(Exec);
-const keygen = require('ssh-keygen-lite');
-
+const keygen = require("ssh-keygen-lite");
 
 function getSSHClientDisposer(config: any) {
 	const createSSHClient = (conf: any) => {
@@ -44,9 +42,9 @@ function getSSHClientDisposer(config: any) {
 						agent: process.env.SSH_AUTH_SOCK,
 						keepaliveInterval: 10000 * 60 * 5, // 5 minute interval
 					},
-					conf,
-				),
-			),
+					conf
+				)
+			)
 		);
 	};
 
@@ -55,36 +53,39 @@ function getSSHClientDisposer(config: any) {
 	});
 }
 
-export class Utils {
+export const utils = {
 	/**
 	 * This is the base hostOS execution command used by many other functions like `executeCommandIntoHostOs` to
 	 * execute commands on the DUT being passed through SSH.
 	 *
 	 * @param {string} command The command to be executed over SSH
-	 * @param {} config SSH config 
+	 * @param {} config SSH config
 	 *
 	 * @category helper
 	 */
-	async executeCommandOverSSH(command: string, config: {}): Promise<any> {
+	executeCommandOverSSH: async (
+		command: string,
+		config: {}
+	): Promise<any> => {
 		return Bluebird.using(getSSHClientDisposer(config), (client) => {
 			return new Bluebird(async (resolve, reject) => {
 				try {
-					client.connection.on('error', (err: any) => {
-						console.log(`Connection err: ${err.message}`)
+					client.connection!.on("error", (err: any) => {
+						console.log(`Connection err: ${err.message}`);
 						reject(err);
 					});
 
 					resolve(
 						await client.exec(command, [], {
-							stream: 'both',
-						}),
+							stream: "both",
+						})
 					);
 				} catch (e) {
-					reject(e)
+					reject(e);
 				}
-			})
-		})
-	}
+			});
+		});
+	},
 
 	/**
 	 * @param {string} promise The command you need to wait for
@@ -95,12 +96,12 @@ export class Utils {
 	 *
 	 * @category helper
 	 */
-	async waitUntil(
+	waitUntil: async (
 		promise: () => Promise<boolean>,
 		rejectionFail: boolean = false,
 		_times: number = 20,
-		_delay: number = 30000,
-	): Promise<any> {
+		_delay: number = 30000
+	): Promise<any> => {
 		async function _waitUntil(timesR: number): Promise<any> {
 			if (timesR === 0) {
 				throw new Error(`Condition ${promise} timed out`);
@@ -121,23 +122,23 @@ export class Utils {
 		}
 
 		await _waitUntil(_times);
-	}
+	},
 
-	async createSSHKey(keyPath: string) {
+	createSSHKey: async (keyPath: string) => {
 		try {
-			await access(path.dirname(keyPath)) 
+			await access(path.dirname(keyPath));
 			const keys = await keygen({
 				location: keyPath,
-				type: 'ed25519'
+				type: "ed25519",
 			});
-			await exec('ssh-add -D');
+			await exec("ssh-add -D");
 			await exec(`ssh-add ${keyPath}`);
 			return {
 				pubKey: keys.pubKey.trim(),
 				key: keys.key.trim(),
 			};
 		} catch (err) {
-			throw new Error(`SSH keys can't be created due to: ${err}`)
+			throw new Error(`SSH keys can't be created due to: ${err}`);
 		}
 	}
 }
