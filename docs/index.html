@@ -59,9 +59,10 @@
 				<a href="#leviathan-test-helpers" id="leviathan-test-helpers" style="color: inherit; text-decoration: none;">
 					<h1>Leviathan Test Helpers</h1>
 				</a>
-				<p>Repository to hold all test helpers being used in <a href="https://github.com/balena-os/leviathan">Leviathan</a> testing framework. The helpers are written in Typescript.</p>
-				<a href="#import-the-helpers" id="import-the-helpers" style="color: inherit; text-decoration: none;">
-					<h2>Import the helpers</h2>
+				<p>Repository to hold all test helpers being used for test execution in <a href="https://github.com/balena-os/leviathan">Leviathan</a> automated testing. These helpers were pulled from Leviathan&#39;s core and almost all of them have been written in Typescript.</p>
+				<p>Check out the <a href="https://balena-os.github.io/test-helpers">documentation</a> for the test helpers. </p>
+				<a href="#using-the-helpers" id="using-the-helpers" style="color: inherit; text-decoration: none;">
+					<h2>Using the helpers</h2>
 				</a>
 				<p>You can start using the helpers by:</p>
 				<ol>
@@ -70,7 +71,7 @@
 				<pre><code><span style="color: #2F86D2">npm</span><span style="color: #002339"> </span><span style="color: #2F86D2">install</span><span style="color: #002339"> @</span><span style="color: #2F86D2">balena</span><span style="color: #7B30D0">/</span><span style="color: #2F86D2">leviathan</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">test</span><span style="color: #7B30D0">-</span><span style="color: #2F86D2">helpers</span>
 </code></pre>
 				<ol start="2">
-					<li>Import the helpers package</li>
+					<li>Import the helpers package in the tests.</li>
 				</ol>
 				<pre><code><span style="color: #7B30D0">import</span><span style="color: #002339"> </span><span style="color: #2F86D2">sdk</span><span style="color: #002339"> </span><span style="color: #7B30D0">from</span><span style="color: #002339"> </span><span style="color: #A44185">&#039;@balena/leviathan-test-helpers&#039;</span>
 
@@ -80,8 +81,41 @@
 					<h2>External Dependencies needed</h2>
 				</a>
 				<ol>
-					<li>balenaCLI: <a href="https://github.com/balena-io/balena-cli/blob/master/INSTALL.md">https://github.com/balena-io/balena-cli/blob/master/INSTALL.md</a></li>
-					<li>Leviathan testing framework: <a href="https://github.com/balena-os/leviathan">https://github.com/balena-os/leviathan</a></li>
+					<li><strong>balenaCLI</strong>: <a href="https://github.com/balena-io/balena-cli/blob/master/INSTALL.md">https://github.com/balena-io/balena-cli/blob/master/INSTALL.md</a></li>
+					<li><strong>Leviathan testing framework</strong>: <a href="https://github.com/balena-os/leviathan">https://github.com/balena-os/leviathan</a></li>
+				</ol>
+				<a href="#documentation-for-leviathan-helpers" id="documentation-for-leviathan-helpers" style="color: inherit; text-decoration: none;">
+					<h2>Documentation for Leviathan Helpers</h2>
+				</a>
+				<p>Documentation for Leviathan helpers can be found on <a href="https://balena-os.github.io/test-helpers">https://balena-os.github.io/test-helpers</a>. To generate the documentation, run the following command from either the root of the repository or the <code>core</code> directory.</p>
+				<pre><code class="language-bash"><span style="color: #002339">npm install</span>
+<span style="color: #002339">npm run docs</span>
+</code></pre>
+				<p>If the docs are generated successfully, you will be getting the success line as:</p>
+				<pre><code class="language-bash"><span style="color: #002339">Info: Documentation generated at /path/to/documentation</span>
+</code></pre>
+				<a href="#developingcontributing-to-the-helpers" id="developingcontributing-to-the-helpers" style="color: inherit; text-decoration: none;">
+					<h2>Developing/Contributing to the helpers</h2>
+				</a>
+				<p>For a faster development cycle when contributing to the helpers, try this workflow. </p>
+				<ol>
+					<li>Make a change to the helpers. </li>
+					<li>Run the command <code>npm pack</code>. This will generated a compressed archive of the package. </li>
+					<li>Move this archive to the root of test directory. </li>
+					<li>Modify the package.json&#39;s dependencies section to use the local version of the test-helpers package as follows:</li>
+				</ol>
+				<pre><code><span style="color: #002339">{</span>
+<span style="color: #002339">    </span><span style="color: #A44185">&quot;dependencies&quot;</span><span style="color: #002339">: {</span>
+<span style="color: #002339">        </span><span style="color: #A44185">&quot;@balena/leviathan-test-helpers&quot;</span><span style="color: #002339">: </span><span style="color: #A44185">&quot;file:NAME-OF-COMPRESSED-ARCHIVE-FOR-THE-PACKAGE.tgz&quot;</span><span style="color: #002339">,</span>
+<span style="color: #002339">        </span><span style="color: #7B30D0">...</span>
+<span style="color: #002339">    }</span>
+<span style="color: #002339">}</span>
+
+</code></pre>
+				<ol start="5">
+					<li>Run <code>npm install</code></li>
+					<li>The tests will now be using your modified version of the package. </li>
+					<li>When finished, don&#39;t forget to change the package.json back to the original state.</li>
 				</ol>
 			</div>
 		</div>
@@ -126,6 +160,7 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
 			</ul>
 			<ul class="tsd-legend">
