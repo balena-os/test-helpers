@@ -51,14 +51,13 @@ import fs from 'fs';
 import { join } from 'path';
 import retry from 'bluebird-retry';
 import Bluebird from 'bluebird';
-import { Utils } from './utils';
+import { utils } from './utils';
 import { promisify } from 'util';
 import * as Child_Process from 'child_process';
 import { BalenaSDK, getSdk } from 'balena-sdk';
-import config from '../config';
+import { config } from '../config';
 
 const exec = promisify(Child_Process.exec);
-const utils = new Utils();
 
 export class Sdk {
 	private balena: BalenaSDK;

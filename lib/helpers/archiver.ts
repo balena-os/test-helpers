@@ -46,7 +46,7 @@
  */;
 'use strict';
 
-import config from '../config';
+import { config } from '../config';
 import { createWriteStream } from 'fs';
 import { copy, ensureDir } from 'fs-extra';
 import { basename, join } from 'path';
