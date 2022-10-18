@@ -51,31 +51,36 @@ import { createWriteStream } from 'fs';
 import { copy, ensureDir } from 'fs-extra';
 import { basename, join } from 'path';
 
-/**
- * Archive a file to be later sent to the client as an artifact.
- *
- * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
- * test suite (Available in the test using `this.id`)
- * @param {string} artifactPath The absolute path of the file needed to be archived.
- */
-export async function add(id: string, artifactPath: string) {
-	const baseLocation = join(config.leviathan.artifacts, id);
-	const archivePath = join(baseLocation, basename(artifactPath));
-	await ensureDir(baseLocation);
-	await copy(artifactPath, archivePath);
+
+export const archiver = {
+	/**
+	 * Archive a file to be later sent to the client as an artifact.
+	 *
+	 * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
+	 * test suite (Available in the test using `this.id`)
+	 * @param {string} artifactPath The absolute path of the file needed to be archived.
+	 */
+	add: async (id: string, artifactPath: string) => {
+		const baseLocation = join(config.leviathan.artifacts, id);
+		const archivePath = join(baseLocation, basename(artifactPath));
+		await ensureDir(baseLocation);
+		await copy(artifactPath, archivePath);
+	},
+
+	/**
+	 * Archive the file as a stream to be later sent to the client as an artifact.
+	 *
+	 * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
+	 * test suite (Available in the test using `this.id`)
+	 * @param {string} artifactPath The absolute path of the file needed to be archived.
+	 * @returns stream of the file
+	 */
+	getStream: async (id: string, artifactPath: string) => {
+		const baseLocation = join(config.leviathan.artifacts, id);
+		const archivePath = join(baseLocation, basename(artifactPath));
+		await ensureDir(baseLocation);
+		return createWriteStream(archivePath);
+	}
 }
 
-/**
- * Archive the file as a stream to be later sent to the client as an artifact.
- *
- * @param {string} id The name of the directory in which logs will be archived. Usuallly this value is the name of the
- * test suite (Available in the test using `this.id`)
- * @param {string} artifactPath The absolute path of the file needed to be archived.
- * @returns stream of the file
- */
-export async function getStream(id: string, artifactPath: string) {
-	const baseLocation = join(config.leviathan.artifacts, id);
-	const archivePath = join(baseLocation, basename(artifactPath));
-	await ensureDir(baseLocation);
-	return createWriteStream(archivePath);
-}
+
