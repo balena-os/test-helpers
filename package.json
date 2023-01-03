@@ -18,6 +18,7 @@
     "lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
     "lint": "balena-lint -u -e js -e ts --tests lib/**/*",
     "docs": "rimraf docs/ && npx typedoc --tsconfig tsconfig.json",
+    "test":  "echo \"Error: no test specified\"",
     "build": "tsc",
     "prepack": "npm run build"
   },
