@@ -1,6 +1,6 @@
 {
   "name": "@balena/leviathan-test-helpers",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Test helpers for Leviathan",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -18,7 +18,7 @@
     "lint:fix": "balena-lint -e js -e ts --fix lib/**/*",
     "lint": "balena-lint -u -e js -e ts --tests lib/**/*",
     "docs": "rimraf docs/ && npx typedoc --tsconfig tsconfig.json",
-    "test":  "echo \"Error: no test specified\"",
+    "test": "echo \"Error: no test specified\"",
     "build": "tsc",
     "prepack": "npm run build"
   },
@@ -53,7 +53,7 @@
     "tar-fs": "^2.1.1"
   },
   "versionist": {
-    "publishedAt": "2022-10-18T11:28:08.773Z"
+    "publishedAt": "2023-01-03T14:01:28.410Z"
   },
   "engines": {
     "node": "~14.19.3"

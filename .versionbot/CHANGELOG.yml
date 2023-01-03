@@ -1,0 +1,249 @@
+- commits:
+    - subject: "minor: Add Flowzone"
+      hash: 3bc927d5b686459a7d812a7cb02dc50338a13f6c
+      body: ""
+      footer:
+        Signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      author: Vipul Gupta (@vipulgupta2048)
+      nested: []
+  version: 1.3.0
+  title: ""
+  date: 2023-01-03T14:01:28.286Z
+- version: 1.2.1
+  date: 2022-10-18T11:39:43Z
+  commits:
+    - hash: d96d606290da159457c022946b5ff1fa6dde7fd2
+      author: Vipul Gupta (@vipulgupta2048)
+      footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      subject: "patch: Export archiver object from Archiver helper"
+      body: null
+    - hash: 3b461c66a1681d552700b1d5e868ab54eab01fe3
+      author: Vipul Gupta (@vipulgupta2048)
+      footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+      subject: "patch: Add docs for Archiver"
+      body: null
+- version: 1.2.0
+- date: 2022-10-18T08:08:11Z
+- commits:
+    - hash: 53f14d021744585aa3e480353463314d730dda4c
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Update balenaOS helper"
+- commits:
+    - body: null
+- commits:
+    - hash: 181c2d304b216cb4b2d625099b1112513ffa4641
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "minor: Get helpers working with e2e tests"
+- commits:
+    - body: null
+- version: 1.1.5
+- date: 2022-10-14T06:54:55Z
+- commits:
+    - hash: 801f217ccd222cde0f41e2ef2f131c645e60201a
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Convert createSSHkey function to async-await"
+- commits:
+    - body: null
+- version: 1.1.4
+- date: 2022-09-09T21:28:43Z
+- commits:
+    - hash: 70f5befe0a676880642aa0937fd57e451331fe16
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Change NPM build workers to Ubuntu"
+- commits:
+    - body: null
+- version: 1.1.3
+- date: 2022-09-09T20:54:27Z
+- commits:
+    - hash: adaa814971938b84bde2bc82f688d6c63f2bda85
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Add files for NPM package"
+- commits:
+    - body: null
+- version: 1.1.2
+- date: 2022-09-09T20:21:42Z
+- commits:
+    - hash: 12ee58f66b10d4cba05775a32bdfca7557bcd67d
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Add files for NPM package"
+- commits:
+    - body: null
+- version: 1.1.1
+- date: 2022-09-09T17:56:59Z
+- commits:
+    - hash: 30dd771173b3111a67b33ede6e7ca77cd28cf464
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "patch: Add NPM repo"
+- commits:
+    - body: null
+- version: 1.1.0
+- date: 2022-09-09T16:09:53Z
+- commits:
+    - hash: 3f827a06b7af89946fc0e93c828ed6937748bc0e
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "minor: Add documentation for test-helpers"
+- commits:
+    - body: null
+- version: 1.0.0
+- date: 2022-09-09T15:39:23Z
+- commits:
+    - hash: 4517d103853e2399ff9777ad218dd90bf157cfa0
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: "major: Update helpers to Leviathan v2"
+- commits:
+    - body: null
+- version: 0.0.2
+- date: 2021-11-10T23:05:22Z
+- commits:
+    - hash: e15e820003f1f170064e6ecbb7fd98561656350c
+- commits:
+    - author: rcooke-warwick
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+- commits:
+    - subject: Inital commit
+- commits:
+    - body: null
+- commits:
+    - hash: 34461277001463bc32c1288b2fedd3fb6fac9f8d
+- commits:
+    - author: rcooke-warwick
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Ryan Cooke <ryan@balena.io>
+- commits:
+    - subject: update searching for version in flasher images
+- commits:
+    - body: null
+- commits:
+    - hash: 8f5b71fc513d458e7cbd2ae2bbd0a261f5d128c1
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Add archvier module and archiveLogs method
+- commits:
+    - body: null
+- commits:
+    - hash: 243df62999be33553046bba39c65215f7a906e92
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Add fetchOS helper and config package
+- commits:
+    - body: null
+- commits:
+    - hash: 753f7a49d18fcbc27cbb1979129a9902976bc615
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Refactor OS helper
+- commits:
+    - body: null
+- commits:
+    - hash: 4663246c30d6582ddba7f7dd2c313e68cbfc706b
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Uniform tabs and space usage
+- commits:
+    - body: null
+- commits:
+    - hash: 23df9bfd9e14914cda4365374290a3f34249f53c
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Add README
+- commits:
+    - body: null
+- commits:
+    - hash: 18ac414430798de0316f2455de99ebd3faca02dc
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Implement global config
+- commits:
+    - body: null
+- commits:
+    - hash: 7ea60deb0a9f62cacb84b2f3796a4597c83447b5
+- commits:
+    - author: Vipul Gupta (@vipulgupta2048)
+- commits:
+    - footers:
+        signed-off-by: Vipul Gupta (@vipulgupta2048) <vipul@balena.io>
+- commits:
+    - subject: Recreate utility helpers
+- commits:
+    - body: null
