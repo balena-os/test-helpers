@@ -29,7 +29,7 @@
  */
 
 /*
- * Copyright 2021 balena
+ * Copyright 2023 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,9 @@ import { join } from 'path';
 import retry from 'bluebird-retry';
 import Bluebird from 'bluebird';
 import { utils } from './utils';
-import { promisify } from 'util';
-import * as Child_Process from 'child_process';
+const { spawn } = require('child_process')
 import { BalenaSDK, getSdk } from 'balena-sdk';
 import { config } from '../config';
-
-const exec = promisify(Child_Process.exec);
 
 export class Sdk {
 	private balena: BalenaSDK;
@@ -154,7 +151,36 @@ export class Sdk {
 	 * @category helper
 	 */
 	async pushReleaseToApp(application: string, directory: string) {
-		await exec(`balena push ${application} --source ${directory}`);
+		//await exec(`balena push ${application} --source ${directory}`);
+		await new Promise<void>(async (resolve, reject) => {
+			let balenaPush = spawn('balena', [
+				'push',
+				application,
+				'--source',
+				directory,
+				'--debug',
+			], { stdio: 'inherit', timeout: 1000 * 60 * 10 }); // 10 minutes
+
+
+			balenaPush.on('close', (code: number) => {
+				if (code != 0) {
+					console.log(`balena Push exited with code ${code}`);
+					reject()
+				}
+				resolve()
+			});
+
+			// For debugging: Push logs to the console or use the archiver to output logs 
+			// balenaPush.stdout.on('data', (data) => {
+			// this.logger.log(data.toString())
+			// })
+
+			balenaPush.on('error', (err: any) => {
+				balenaPush.kill()
+				reject(err);
+			});
+		});
+
 		// check new commit of app
 		let commit = await this.balena.models.application.getTargetReleaseHash(
 			application,
