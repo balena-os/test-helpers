@@ -91,6 +91,11 @@
 <span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">os</span><span style="color: #002339">.</span><span style="color: #7EB233">fetch</span><span style="color: #002339">()</span>
 <span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #2F86D2">os</span><span style="color: #002339">.</span><span style="color: #7EB233">configure</span><span style="color: #002339">()</span>
 </code></pre>
+					<p>Alternatively, you can use the CLI to perform these functions - the CLI is imported in the testing environment:</p>
+					<pre><code class="language-js"><span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena login --token ${</span><span style="color: #2F86D2">API_KEY</span><span style="color: #A44185">}`</span><span style="color: #002339">)</span>
+<span style="color: #7B30D0">await</span><span style="color: #002339"> </span><span style="color: #7EB233">exec</span><span style="color: #002339">(</span><span style="color: #A44185">`balena os configure ${</span><span style="color: #2F86D2">PATH_TO_IMAGE</span><span style="color: #A44185">} --config-network wifi --config-wifi-key ${</span><span style="color: #2F86D2">PASSWORD</span><span style="color: #A44185">}</span>
+<span style="color: #A44185">--config-wifi-ssid ${</span><span style="color: #2F86D2">SSID</span><span style="color: #A44185">}`</span><span style="color: #002339">);</span>
+</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
