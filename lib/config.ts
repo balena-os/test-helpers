@@ -7,7 +7,6 @@ export const config = {
     reports: '/reports/',           // To store/download reports generated from the suite (non-persistent) 
     workdir: '/data',
     uploads: {
-      image: '/data/os.img',
       config: '/data/config.json',
       suite: '/data/suite'
     }
