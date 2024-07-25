@@ -35,7 +35,7 @@
     "@types/request-promise": "^4.1.48",
     "@types/tar-fs": "^2.0.1",
     "rimraf": "^4.4.1",
-    "typedoc": "^0.21.2",
+    "typedoc": "^0.26.0",
     "typescript": "^4.4.4"
   },
   "dependencies": {
