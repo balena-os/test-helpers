@@ -23,7 +23,7 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "@balena/lint": "^6.2.2",
+    "@balena/lint": "^8.0.0",
     "@types/bluebird": "^3.5.38",
     "@types/bluebird-retry": "^0.11.5",
     "@types/fs-extra": "^11.0.1",
